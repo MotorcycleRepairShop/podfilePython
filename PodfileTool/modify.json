@@ -1,0 +1,15 @@
+
+{
+  "comment":"// sources： value == 1 -> add | value == \"\" -> deletet \n// dependencies: value != NULL ->add/modify | value == \"\" ->delete\n// targetName value != NULL ->modify | value ==\"\" -> no change \n",
+  "sources":{
+    "www.test.com":"1",
+    "www.test2.com":""
+  },
+  "dependencies":{
+    "test1":"1.1.1",
+    "test2":"1.1.2",
+    "Aspects":"",
+    "DeviceUtil":"test"
+  },
+  "targetName":"targetNameTest"
+}

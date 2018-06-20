@@ -6,14 +6,27 @@ import sys
 import os
 import io
 
-def addDependency(podfileDic):
-  return 1
-def deleteDependency(podfileDic):
-  return 1
-def addSource(podfileDic):
-  return 1
-def deleteSource(podfileDic):
-  return 1
+def addDependency(podfileDic,itemKey,itemVaule):
+  dependencyDic = podfileDic['dependency'].update({itemKey,itemVaule})
+  return dependencyDic
+
+def deleteDependency(podfileDic,itemKey):
+  del podfileDic['dependency'][itemKey]
+  dependencyDic = podfileDic['dependency']
+  return dependencyDic
+
+def addSource(podfileDic,addSourceStr):
+  sourceList = podfileDic['source'] 
+  if addSourceStr not in sourceList:
+    sourceList.append(addSourceStr)    
+  return sourceList
+
+def deleteSource(podfileDic,delSourceStr):
+  sourceList = podfileDic['source'] 
+  if delSourceStr in sourceList:
+    sourceList.remove(delSourceStr)
+  return sourceList
+
 def modifyTargetName(podfileDic):
   return 1
 def analysisPodfile(podfilePath):
@@ -49,6 +62,27 @@ def analysisPodfile(podfilePath):
   return podfileDic
 
 def operationPodfile(podfileDic,modifyDic):
+  modifySourceDic = modifyDic['source']
+  modifyTargetName = modifyDic['targetName']
+  modifyDependencyDic = modifyDic['dependency']
+
+  for itemKey in modifySourceDic.keys():
+    if modifySourceDic[itemKey] == 1 :
+      podfileDic['source'] = addSource(podfileDic,itemKey)
+    else:
+      podfileDic['source'] = deleteSource(podfileDic,itemKey)
+  
+  for dependencyItemKey in modifyDependencyDic.keys():
+    if modifyDependencyDic[dependencyItemKey]:
+      podfileDic['dependency'] = addDependency(podfileDic,dependencyItemKey,modifyDependencyDic[dependencyItemKey])
+    else:
+      podfileDic['dependency'] = deleteDependency(podfileDic,dependencyItemKey)
+
+  
+
+      
+      
+      
 
   return newPodfileDic
 if __name__ == '__main__':
@@ -71,11 +105,13 @@ if __name__ == '__main__':
   jsonFile = open(jsonPath)
   jsonDic = json.load(jsonFile)
   # 调用通过字符串拼接
-  print (podfileDic)
-  defStr = operation+operationType.capitalize()
-  mod    = sys.modules['__main__']  
-  defAttribute=getattr(mod,defStr)
-  defReturn   = defAttribute(podfileDic,modifyDic)
+  print (jsonDic)
+  # defStr = operation+operationType.capitalize()
+  # mod    = sys.modules['__main__']  
+  # defAttribute=getattr(mod,defStr)
+  # defReturn   = defAttribute(podfileDic,modifyDic)
+
+  # newPodfileDic = operationPodfile(podfileDic,modifyDic)
 
     
     

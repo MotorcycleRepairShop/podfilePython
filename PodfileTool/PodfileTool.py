@@ -7,7 +7,8 @@ import os
 import io
 
 def addDependency(podfileDic,itemKey,itemVaule):
-  dependencyDic = podfileDic['dependency'].update({itemKey,itemVaule})
+  dependencyDic = podfileDic['dependency']
+  dependencyDic.update({itemKey:itemVaule})
   return dependencyDic
 
 def deleteDependency(podfileDic,itemKey):
@@ -27,8 +28,6 @@ def deleteSource(podfileDic,delSourceStr):
     sourceList.remove(delSourceStr)
   return sourceList
 
-def modifyTargetName(podfileDic):
-  return 1
 def analysisPodfile(podfilePath):
   # 创建yaml文件 
   cwd = os.getcwd()
@@ -62,12 +61,12 @@ def analysisPodfile(podfilePath):
   return podfileDic
 
 def operationPodfile(podfileDic,modifyDic):
-  modifySourceDic = modifyDic['source']
+  modifySourceDic = modifyDic['sources']
   modifyTargetName = modifyDic['targetName']
-  modifyDependencyDic = modifyDic['dependency']
+  modifyDependencyDic = modifyDic['dependencies']
 
   for itemKey in modifySourceDic.keys():
-    if modifySourceDic[itemKey] == 1 :
+    if modifySourceDic[itemKey] == '1' :
       podfileDic['source'] = addSource(podfileDic,itemKey)
     else:
       podfileDic['source'] = deleteSource(podfileDic,itemKey)
@@ -78,12 +77,7 @@ def operationPodfile(podfileDic,modifyDic):
     else:
       podfileDic['dependency'] = deleteDependency(podfileDic,dependencyItemKey)
 
-  
-
-      
-      
-      
-
+  newPodfileDic = podfileDic
   return newPodfileDic
 if __name__ == '__main__':
   # add delete modify
@@ -111,7 +105,21 @@ if __name__ == '__main__':
   # defAttribute=getattr(mod,defStr)
   # defReturn   = defAttribute(podfileDic,modifyDic)
 
-  # newPodfileDic = operationPodfile(podfileDic,modifyDic)
+  newPodfileDic = operationPodfile(podfileDic,jsonDic)
+  print(newPodfileDic)
 
-    
+  # 生成Podfile
+  podfile = open("Podfile",'w+')
+  # source  部分
+  sourceStr = ""
+  for source_path in newPodfileDic['source']:
+    sourceStr += "source %s \n"% source_path
+
+  dependenciesStr = ""
+  for key in newPodfileDic['dependency'].keys():
+    dependenciesStr += "pod '%s' , '%s' \n" %(key,newPodfileDic['dependency'][key])
+
+  podfileStr = "%starget '%s' do \n%send\n" %(sourceStr,newPodfileDic['targetName'],dependenciesStr)
+
+  podfile.write(podfileStr)
     
